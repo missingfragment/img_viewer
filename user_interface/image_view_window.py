@@ -14,6 +14,8 @@ class ImageViewWindow(DefaultWindow):
 
         self.title(f"{path}")
 
+        self.fullscreen = False
+
         self.mainframe = ttk.Frame(self, padding=10)
         self.mainframe.grid(column=0, row=0, sticky=NSEW)
         self.mainframe.bind("<Configure>", self.on_resize)
@@ -49,3 +51,13 @@ class ImageViewWindow(DefaultWindow):
 
     def update_image(self):
         self.image_label['image'] = self.photoimage
+
+    def toggle_fullscreen(self):
+        self.fullscreen = not self.fullscreen
+
+        self.attributes("-fullscreen", 1 if self.fullscreen else 0)
+
+        strings = self.app.strings
+        new_text = strings.exit_fullscreen if self.fullscreen else strings.fullscreen
+
+        self.menubar.view_menu.entryconfigure(0, label=new_text)

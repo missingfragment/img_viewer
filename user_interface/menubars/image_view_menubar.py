@@ -9,6 +9,7 @@ class ImageViewMenubar(Menu):
         self.parent = parent
 
         self.file_menu = self.setup_file_menu()
+        self.view_menu = self.setup_view_menu()
 
     def setup_file_menu(self) -> Menu:
         app = self.parent.app
@@ -35,3 +36,16 @@ class ImageViewMenubar(Menu):
         )
 
         return file_menu
+
+    def setup_view_menu(self) -> Menu:
+        app = self.parent.app
+
+        view_menu = Menu(self)
+        self.add_cascade(menu=view_menu, label=app.strings.view)
+
+        view_menu.add_command(
+            label=app.strings.fullscreen,
+            command=self.parent.toggle_fullscreen
+        )
+
+        return view_menu

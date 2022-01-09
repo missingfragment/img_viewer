@@ -12,6 +12,10 @@ class Strings:
         self.close = "Close Window"
         self.close_all = "Close All Windows"
 
+        self.view = "View"
+        self.fullscreen = "Fullscreen"
+        self.exit_fullscreen = "Exit Fullscreen"
+
         self.error_messages = {}
         self.error_messages["image_expected"] = '''Please select an image file.
         (Use the "Open Directory" command to browse a directory)'''
