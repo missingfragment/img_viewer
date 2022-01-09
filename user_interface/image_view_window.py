@@ -5,6 +5,7 @@ from pathlib import Path
 from PIL import Image, ImageTk
 
 from user_interface.default_window import DefaultWindow
+from user_interface.menubars.image_view_menubar import ImageViewMenubar
 
 
 class ImageViewWindow(DefaultWindow):
@@ -30,6 +31,9 @@ class ImageViewWindow(DefaultWindow):
             self.mainframe, image=self.photoimage)
 
         self.image_label.place(relx=.5, rely=.5, anchor=CENTER)
+
+        self.menubar = ImageViewMenubar(self)
+        self['menu'] = self.menubar
 
     def on_resize(self, event):
         new_size = (event.width, event.height)

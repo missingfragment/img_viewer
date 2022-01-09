@@ -81,6 +81,19 @@ class Application():
         if len(self.windows.keys()) < 2:
             self.windows["welcome"].deiconify()
 
+    def close_all_windows(self):
+        keys_to_remove = []
+        for key in self.windows.keys():
+            if key == "welcome":
+                continue
+            self.windows[key].destroy()
+            keys_to_remove.append(key)
+
+        for key in keys_to_remove:
+            self.windows.pop(key)
+
+        self.windows["welcome"].deiconify()
+
     def exit(self):
         self.root.destroy()
 

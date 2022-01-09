@@ -8,6 +8,9 @@ class Strings:
         self.open_image = "Open Image..."
         self.open_folder = "Open Folder..."
         self.welcome_prompt = "Open an image or directory for viewing."
+        self.exit = "Exit"
+        self.close = "Close Window"
+        self.close_all = "Close All Windows"
 
         self.error_messages = {}
         self.error_messages["image_expected"] = '''Please select an image file.

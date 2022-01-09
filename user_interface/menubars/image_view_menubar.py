@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 
 
-class DefaultMenubar(Menu):
+class ImageViewMenubar(Menu):
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
@@ -27,7 +27,11 @@ class DefaultMenubar(Menu):
         file_menu.add_separator()
 
         file_menu.add_command(
-            label=app.strings.exit, command=app.exit
+            label=app.strings.close, command=self.parent.on_destroy
+        )
+
+        file_menu.add_command(
+            label=app.strings.close_all, command=app.close_all_windows
         )
 
         return file_menu
