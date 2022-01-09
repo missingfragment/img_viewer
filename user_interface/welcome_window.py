@@ -39,3 +39,7 @@ class WelcomeWindow(DefaultWindow):
         open_folder_button.grid(row=0, column=1, sticky=W)
 
         return mainframe
+
+    def on_destroy(self):
+        self.destroy()
+        self.app.exit()

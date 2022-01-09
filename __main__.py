@@ -43,7 +43,7 @@ class Application():
 
         self.windows[file] = ImageViewWindow(
             self.root, file.resolve(), app=self)
-        self.windows["welcome"].iconify()
+        self.windows["welcome"].withdraw()
 
     def open_folder(self):
         folder = filedialog.askdirectory()
@@ -66,7 +66,23 @@ class Application():
 
             win.update_folder(folder)
 
-        self.windows["welcome"].iconify()
+        self.windows["welcome"].withdraw()
+
+    def on_window_closed(self, window):
+        window_key = None
+        for key in self.windows.keys():
+            if self.windows[key] != window:
+                continue
+            window_key = key
+
+        if window_key != None:
+            self.windows.pop(window_key)
+
+        if len(self.windows.keys()) < 2:
+            self.windows["welcome"].deiconify()
+
+    def exit(self):
+        self.root.destroy()
 
 
 root = Tk()

@@ -19,3 +19,9 @@ class DefaultWindow(Toplevel):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+
+        self.protocol("WM_DELETE_WINDOW", self.on_destroy)
+
+    def on_destroy(self):
+        self.destroy()
+        self.app.on_window_closed(self)
