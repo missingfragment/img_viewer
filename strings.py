@@ -15,6 +15,7 @@ class Strings:
         self.view = "View"
         self.fullscreen = "Fullscreen"
         self.exit_fullscreen = "Exit Fullscreen"
+        self.hide_menubar = "Hide Menubar"
 
         self.error_messages = {}
         self.error_messages["image_expected"] = '''Please select an image file.

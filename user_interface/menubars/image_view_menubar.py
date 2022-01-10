@@ -35,6 +35,12 @@ class ImageViewMenubar(Menu):
             label=app.strings.close_all, command=app.close_all_windows
         )
 
+        file_menu.add_separator()
+
+        file_menu.add_command(
+            label=app.strings.exit, command=app.exit
+        )
+
         return file_menu
 
     def setup_view_menu(self) -> Menu:
@@ -46,6 +52,15 @@ class ImageViewMenubar(Menu):
         view_menu.add_command(
             label=app.strings.fullscreen,
             command=self.parent.toggle_fullscreen
+        )
+
+        self.menubar_hide_state = BooleanVar()
+
+        view_menu.add_checkbutton(
+            label=app.strings.hide_menubar,
+            onvalue=True, offvalue=False,
+            variable=self.menubar_hide_state,
+            command=self.parent.on_altpress,
         )
 
         return view_menu

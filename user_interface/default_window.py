@@ -12,7 +12,7 @@ class DefaultWindow(Toplevel):
 
         self.root = root
 
-        self.minsize(400, 400)
+        self.minsize(800, 600)
 
         self.menubar = DefaultMenubar(self)
         self['menu'] = self.menubar

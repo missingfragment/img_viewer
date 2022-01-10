@@ -37,6 +37,20 @@ class ImageViewWindow(DefaultWindow):
         self.menubar = ImageViewMenubar(self)
         self['menu'] = self.menubar
 
+        self.bind("<Alt_L>", self.on_altpress)
+
+        self.menubar.view_menu.entryconfig(
+            self.app.strings.hide_menubar, state="disabled")
+
+    def on_altpress(self, event=None):
+        if self.fullscreen:
+            if self['menu'] == "":
+                self['menu'] = self.menubar
+                self.menubar.menubar_hide_state.set(False)
+            else:
+                self['menu'] = ""
+                self.menubar.menubar_hide_state.set(True)
+
     def on_resize(self, event):
         new_size = (event.width, event.height)
         if new_size == self.image_size or new_size[0] < 20 or new_size[1] < 20:
@@ -59,5 +73,16 @@ class ImageViewWindow(DefaultWindow):
 
         strings = self.app.strings
         new_text = strings.exit_fullscreen if self.fullscreen else strings.fullscreen
+
+        if self.fullscreen:
+            self.configure(menu="")
+            self.menubar.view_menu.entryconfig(
+                self.app.strings.hide_menubar, state="normal"
+            )
+        else:
+            self.configure(menu=self.menubar)
+            self.menubar.view_menu.entryconfig(
+                self.app.strings.hide_menubar, state="disabled"
+            )
 
         self.menubar.view_menu.entryconfigure(0, label=new_text)

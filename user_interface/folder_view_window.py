@@ -31,9 +31,9 @@ class FolderViewWindow(DefaultWindow):
 
         self.view_size = (0, 0)
 
-        self.fill_placeholders(path)
+        # self.fill_placeholders(path)
 
-        # self.update_folder(path)
+        self.update_folder(path)
 
         self.bind("<Configure>", self.on_resize)
 
