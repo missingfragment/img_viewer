@@ -8,6 +8,8 @@ class WelcomeWindow(DefaultWindow):
     def __init__(self, root, **kwargs) -> None:
         super().__init__(root, **kwargs)
 
+        self.title("img_viewer")
+
         self.mainframe = self.setup_layout()
 
     def setup_layout(self) -> ttk.Frame:

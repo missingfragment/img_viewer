@@ -12,6 +12,8 @@ class FolderViewWindow(DefaultWindow):
     def __init__(self, root, path: Path, **kwargs):
         super().__init__(root, **kwargs)
 
+        self.title(f"{path}")
+
         self.viewport = ViewPort(self)
 
         self.path = path
@@ -29,7 +31,9 @@ class FolderViewWindow(DefaultWindow):
 
         self.view_size = (0, 0)
 
-        self.update_folder(path)
+        self.fill_placeholders(path)
+
+        # self.update_folder(path)
 
         self.bind("<Configure>", self.on_resize)
 
@@ -47,6 +51,20 @@ class FolderViewWindow(DefaultWindow):
         self.viewport.configure(yscrollcommand=scrollbar.set)
 
         return scrollbar
+
+    def fill_placeholders(self, folder: Path) -> None:
+        count = len([file for file in folder.glob("*.*") if file.is_file()])
+
+        for i in range(0, count):
+            im = Image.new(mode="RGB", size=self.thumb_size, color="#222")
+            placeholder = ImageTk.PhotoImage(im)
+            self.icons.append(ttk.Label(
+                self.viewport.mainframe,
+                image=placeholder,
+                anchor=NW,
+            ))
+
+            self.icons[i].image = placeholder
 
     def update_folder(self, folder: Path) -> None:
         thumb_size = self.thumb_size
