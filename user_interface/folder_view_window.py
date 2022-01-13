@@ -41,8 +41,9 @@ class FolderViewWindow(DefaultWindow):
 
         self.loading_font = tkFont.Font(size=24)
 
-        self.loading_style = ttk.Style()
-        self.loading_style.configure("Loading.TLabel", font=self.loading_font)
+        self.style = ttk.Style()
+        self.style.configure("Loading.TLabel", font=self.loading_font)
+        self.style.configure("Img.TButton", highlightthickness=0, bd=0)
 
         self.loading_panel = ttk.Frame(self)
         self.loading_text = ttk.Label(
@@ -207,10 +208,12 @@ class FolderViewWindow(DefaultWindow):
         for file in self.file_dict.keys():
             image = self.file_dict[file]
             photoimage = ImageTk.PhotoImage(image=image)
-            self.icons.append(ttk.Button(
+            self.icons.append(Button(
                 self.viewport.mainframe,
                 image=photoimage,
-                command=lambda f=file: self.app.open_image(f)
+                command=lambda f=file: self.app.open_image(f),
+                borderwidth=0,
+                cursor="hand2"
             ))
 
             label = self.icons[i]
@@ -227,6 +230,7 @@ class FolderViewWindow(DefaultWindow):
 
         row: int = 0
         col: int = 0
+        label: Widget
         for label in self.icons:
 
             label.grid(column=col, row=row, sticky=NSEW)

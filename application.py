@@ -110,6 +110,10 @@ class Application():
 
         self.windows["welcome"].withdraw()
 
+        win = self.windows["folder"]
+        win.lift()
+        win.focus_force()
+
     def on_window_closed(self, window):
         window_key = None
         for key in self.windows.keys():
