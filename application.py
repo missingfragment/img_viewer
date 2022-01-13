@@ -53,7 +53,7 @@ class Application():
         config_path = Path("config.ini")
 
         self.config["FolderView"] = {}
-        self.config["FolderView"]["folder batch count"] = "20"
+        self.config["FolderView"]["folder batch count"] = "21"
 
         if config_path.is_file() and config_path.exists():
             self.config.read(config_path)
