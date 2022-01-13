@@ -83,6 +83,10 @@ class Application():
             self.root, file.resolve(), app=self)
         self.windows["welcome"].withdraw()
 
+        win: ImageViewWindow = self.windows[file]
+        win.lift()
+        win.focus_force()
+
     def open_folder(self):
         folder = filedialog.askdirectory()
 

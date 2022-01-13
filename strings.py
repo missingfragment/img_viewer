@@ -11,6 +11,7 @@ class Strings:
         self.exit = "Exit"
         self.close = "Close Window"
         self.close_all = "Close All Windows"
+        self.loading = "Loading..."
 
         self.view = "View"
         self.fullscreen = "Fullscreen"

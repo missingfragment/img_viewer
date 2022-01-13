@@ -27,6 +27,8 @@ class FolderViewWindow(DefaultWindow):
         self.page = 0
         self.max_pages = 0
 
+        self.thumb_size = (200, 200)
+
         self.viewport.grid(column=0, row=0, sticky=NSEW)
 
         self.scrollbar = self.setup_scrollbar()
@@ -36,18 +38,23 @@ class FolderViewWindow(DefaultWindow):
         self.navigation_panel = self.setup_navigation_panel()
         self.navigation_panel.grid(column=0, row=1, sticky=NSEW)
 
-        self.thumb_size = (200, 200)
+        self.loading_panel = ttk.Frame(self, padding=25)
+        self.loading_text = ttk.Label(
+            self.loading_panel, text=self.app.strings.loading,
+            justify="center"
+        ).place(relx=.5, rely=.5)
+
+        self.loading_panel.grid(column=0, row=0, sticky=NSEW)
 
         self.images = []
         self.icons = []
 
         self.view_size = (0, 0)
 
-        # self.fill_placeholders(path)
-
-        self.update_folder(path)
-
         self.bind("<Configure>", self.on_resize)
+        self.update_idletasks()
+
+        self.after(1, self.update_folder, path)
 
     def on_resize(self, event):
         new_size = (event.width, event.height)
@@ -125,18 +132,31 @@ class FolderViewWindow(DefaultWindow):
 
     def reload_page(self):
         files_to_load = self.get_page(self.page)
-        self.update_images(files_to_load)
-        self.update_layout()
 
-        self.back_button.configure(
-            state="disabled" if self.page <= 0 else "normal"
-        )
-        self.next_button.configure(
-            state="disabled" if self.page >= self.max_pages else "normal"
-        )
-        self.page_label.configure(
-            text=f"{self.page+1}/{self.max_pages+1}"
-        )
+        self.viewport.grid_remove()
+        self.loading_panel.grid()
+
+        self.update_idletasks()
+
+        def reload():
+
+            self.update_images(files_to_load)
+            self.update_layout()
+
+            self.viewport.grid()
+            self.loading_panel.grid_remove()
+
+            self.back_button.configure(
+                state="disabled" if self.page <= 0 else "normal"
+            )
+            self.next_button.configure(
+                state="disabled" if self.page >= self.max_pages else "normal"
+            )
+            self.page_label.configure(
+                text=f"{self.page+1}/{self.max_pages+1}"
+            )
+
+        self.after(1, reload)
 
     def get_page(self, index: int):
         page_number = index
