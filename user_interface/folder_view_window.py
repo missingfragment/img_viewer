@@ -74,6 +74,8 @@ class FolderViewWindow(DefaultWindow):
 
         self.viewport.clear()
 
+        self.file_dict = {}
+
         assert folder.is_dir()
 
         for file in folder.glob("*.*"):
@@ -86,13 +88,16 @@ class FolderViewWindow(DefaultWindow):
             thumbnail.thumbnail(size=thumb_size)
             self.images.append(thumbnail)
 
+            self.file_dict[file] = thumbnail
+
         i: int = 0
-        for image in self.images:
+        for file in self.file_dict.keys():
+            image = self.file_dict[file]
             photoimage = ImageTk.PhotoImage(image=image)
-            self.icons.append(ttk.Label(
+            self.icons.append(ttk.Button(
                 self.viewport.mainframe,
                 image=photoimage,
-                anchor=NW
+                command=lambda f=file: self.app.open_image(f)
             ))
 
             label = self.icons[i]

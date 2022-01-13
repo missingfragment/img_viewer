@@ -25,18 +25,19 @@ class Application():
 
         self.windows = {}
 
-    def open_image(self):
-        file = filedialog.askopenfilename(filetypes=self.filetypes)
-        if not file:
-            return
+    def open_image(self, file=None):
+        if file is None:
+            file = filedialog.askopenfilename(filetypes=self.filetypes)
+            if not file:
+                return
 
-        file = Path(file)
+            file = Path(file)
 
-        if file.is_dir():
-            messagebox.showwarning(
-                self.strings.error_messages["image_expected"]
-            )
-            return
+            if file.is_dir():
+                messagebox.showwarning(
+                    self.strings.error_messages["image_expected"]
+                )
+                return
 
         self.windows[file] = ImageViewWindow(
             self.root, file.resolve(), app=self)
