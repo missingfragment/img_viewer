@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 from tkinter import *
 from tkinter import ttk
+import tkinter.font as tkFont
 from pathlib import Path
 
 from PIL import Image, ImageTk
@@ -38,11 +39,18 @@ class FolderViewWindow(DefaultWindow):
         self.navigation_panel = self.setup_navigation_panel()
         self.navigation_panel.grid(column=0, row=1, sticky=NSEW)
 
-        self.loading_panel = ttk.Frame(self, padding=25)
+        self.loading_font = tkFont.Font(size=24)
+
+        self.loading_style = ttk.Style()
+        self.loading_style.configure("Loading.TLabel", font=self.loading_font)
+
+        self.loading_panel = ttk.Frame(self)
         self.loading_text = ttk.Label(
             self.loading_panel, text=self.app.strings.loading,
-            justify="center"
-        ).place(relx=.5, rely=.5)
+            justify="center",
+            style="Loading.TLabel",
+            anchor=CENTER
+        ).place(relx=.5, rely=.5, anchor=CENTER)
 
         self.loading_panel.grid(column=0, row=0, sticky=NSEW)
 
