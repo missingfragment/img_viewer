@@ -134,6 +134,9 @@ class FolderViewWindow(DefaultWindow):
         self.next_button.configure(
             state="disabled" if self.page >= self.max_pages else "normal"
         )
+        self.page_label.configure(
+            text=f"{self.page+1}/{self.max_pages+1}"
+        )
 
     def get_page(self, index: int):
         page_number = index
