@@ -24,3 +24,6 @@ class Strings:
         Please select a directory.
         (Use the "Open Image" command to open a single image.)
         '''
+
+        self.next = "Next"
+        self.previous = "Previous"

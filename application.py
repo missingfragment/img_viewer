@@ -2,6 +2,7 @@ from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 from strings import Strings
 from pathlib import Path
+from configparser import ConfigParser
 from user_interface.folder_view_window import FolderViewWindow
 from user_interface.image_view_window import ImageViewWindow
 
@@ -12,8 +13,9 @@ class Application():
         self.root = root
 
         self.filetypes = [
-            ("Common Formats", ".png .jpg .jpeg .gif .bmp"),
+            ("Common Formats", ".png .jpg .jpeg .gif .bmp .webp"),
             ("PNG Images", ".png"),
+            ("WebP Images", ".webp"),
             ("JPEG Images", ".jpg .jpeg .jfif"),
             ("JPEG 2000 Images", ".j2k .jpx"),
             ("GIF Images", ".gif"),
@@ -22,8 +24,43 @@ class Application():
             ("Icon Files", ".ico"),
             ("All Files", ".*"),
         ]
+        self.file_extentions = [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".bmp",
+            ".jfif",
+            ".webp",
+            ".j2k",
+            ".jpx",
+            ".gif",
+            ".tiff",
+            ".bmp",
+            ".ico",
+        ]
 
         self.windows = {}
+
+        self.init_config()
+
+    def has_valid_extention(self, filename: str):
+        return any(filename.lower().endswith(e) for e in self.file_extentions)
+
+    def init_config(self):
+        self.config = ConfigParser()
+
+        config_path = Path("config.ini")
+
+        self.config["FolderView"] = {}
+        self.config["FolderView"]["folder batch count"] = "20"
+
+        if config_path.is_file() and config_path.exists():
+            self.config.read(config_path)
+        else:
+            config_path.touch()
+            with open(config_path, 'w') as config_file:
+                self.config.write(config_file)
 
     def open_image(self, file=None):
         if file is None:
@@ -38,6 +75,9 @@ class Application():
                     self.strings.error_messages["image_expected"]
                 )
                 return
+
+        if type(file) is str:
+            file = Path(file)
 
         self.windows[file] = ImageViewWindow(
             self.root, file.resolve(), app=self)

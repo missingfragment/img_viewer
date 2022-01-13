@@ -10,7 +10,6 @@ class ViewPort(Canvas):
         self.mainframe = ttk.Frame(self, padding=5)
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.rowconfigure(0, weight=1)
-        self.configure(borderwidth=0)
 
         self.create_window(
             0, 0, window=self.mainframe, anchor=NW, tags="main"

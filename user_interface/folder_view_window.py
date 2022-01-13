@@ -1,8 +1,10 @@
+from configparser import ConfigParser
 from tkinter import *
 from tkinter import ttk
 from pathlib import Path
 
 from PIL import Image, ImageTk
+from strings import Strings
 
 from user_interface.default_window import DefaultWindow
 from user_interface.viewport import ViewPort
@@ -14,15 +16,25 @@ class FolderViewWindow(DefaultWindow):
 
         self.title(f"{path}")
 
-        self.viewport = ViewPort(self)
+        self.viewport = ViewPort(self, borderwidth=0)
 
         self.path = path
+        self.files = []
+
+        config: ConfigParser = self.app.config
+        self.batch_count = config.getint("FolderView", "folder batch count")
+
+        self.page = 0
+        self.max_pages = 0
 
         self.viewport.grid(column=0, row=0, sticky=NSEW)
 
         self.scrollbar = self.setup_scrollbar()
 
         self.scrollbar.grid(column=1, row=0, sticky=NSEW)
+
+        self.navigation_panel = self.setup_navigation_panel()
+        self.navigation_panel.grid(column=0, row=1, sticky=NSEW)
 
         self.thumb_size = (200, 200)
 
@@ -44,6 +56,35 @@ class FolderViewWindow(DefaultWindow):
 
         self.update_layout()
 
+    def setup_navigation_panel(self) -> Widget:
+        strings: Strings = self.app.strings
+        nav_panel = ttk.Frame(self, padding=5)
+
+        self.back_button = ttk.Button(
+            nav_panel,
+            text=strings.previous,
+            command=self.prev_page
+        )
+        self.next_button = ttk.Button(
+            nav_panel,
+            text=strings.next,
+            command=self.next_page
+        )
+
+        self.page_label = ttk.Label(
+            nav_panel,
+            text="",
+        )
+
+        self.back_button.grid(column=0, row=0, sticky=W)
+        self.page_label.grid(column=1, row=0, sticky=NSEW)
+        self.next_button.grid(column=2, row=0, sticky=E)
+
+        nav_panel.columnconfigure(0, weight=1)
+        nav_panel.columnconfigure(2, weight=1)
+
+        return nav_panel
+
     def setup_scrollbar(self) -> Scrollbar:
         scrollbar = ttk.Scrollbar(
             self, orient=VERTICAL, command=self.viewport.yview)
@@ -52,23 +93,60 @@ class FolderViewWindow(DefaultWindow):
 
         return scrollbar
 
-    def fill_placeholders(self, folder: Path) -> None:
-        count = len([file for file in folder.glob("*.*") if file.is_file()])
+    def update_folder(self, folder: Path, offset=0) -> None:
+        self.page = 0
 
-        for i in range(0, count):
-            im = Image.new(mode="RGB", size=self.thumb_size, color="#222")
-            placeholder = ImageTk.PhotoImage(im)
-            self.icons.append(ttk.Label(
-                self.viewport.mainframe,
-                image=placeholder,
-                anchor=NW,
-            ))
+        assert folder.is_dir()
 
-            self.icons[i].image = placeholder
+        self.path = folder
+        all_files = folder.glob("*.*")
 
-    def update_folder(self, folder: Path) -> None:
-        thumb_size = self.thumb_size
+        all_files = [str(file) for file in all_files]
 
+        self.files = list(
+            [
+                Path(file)
+                for file in all_files
+                if self.app.has_valid_extention(file)
+            ]
+        )
+
+        self.max_pages = len(self.files) // self.batch_count
+
+        self.reload_page()
+
+    def next_page(self):
+        self.page += 1
+        self.reload_page()
+
+    def prev_page(self):
+        self.page -= 1
+        self.reload_page()
+
+    def reload_page(self):
+        files_to_load = self.get_page(self.page)
+        self.update_images(files_to_load)
+        self.update_layout()
+
+        self.back_button.configure(
+            state="disabled" if self.page <= 0 else "normal"
+        )
+        self.next_button.configure(
+            state="disabled" if self.page >= self.max_pages else "normal"
+        )
+
+    def get_page(self, index: int):
+        page_number = index
+        page_size = self.batch_count
+
+        files = self.files
+
+        offset = page_number * page_size
+        endpoint = min(offset + page_size, len(self.files))
+
+        return files[offset:endpoint]
+
+    def update_images(self, files: list[Path]):
         self.images: Image = []
         self.icons = []
 
@@ -76,9 +154,10 @@ class FolderViewWindow(DefaultWindow):
 
         self.file_dict = {}
 
-        assert folder.is_dir()
+        thumb_size = self.thumb_size
+        batch_count = self.batch_count
 
-        for file in folder.glob("*.*"):
+        for file in files:
             try:
                 image: Image = Image.open(file)
             except OSError:
@@ -89,6 +168,9 @@ class FolderViewWindow(DefaultWindow):
             self.images.append(thumbnail)
 
             self.file_dict[file] = thumbnail
+
+            if len(self.images) >= batch_count:
+                break
 
         i: int = 0
         for file in self.file_dict.keys():
