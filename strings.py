@@ -12,6 +12,10 @@ class Strings:
         self.close = "Close Window"
         self.close_all = "Close All Windows"
         self.loading = "Loading..."
+        self.preferences = "Preferences..."
+
+        self.apply = "Apply"
+        self.cancel = "Cancel"
 
         self.view = "View"
         self.fullscreen = "Fullscreen"

@@ -27,6 +27,12 @@ class DefaultMenubar(Menu):
         file_menu.add_separator()
 
         file_menu.add_command(
+            label=app.strings.preferences, command=app.open_settings
+        )
+
+        file_menu.add_separator()
+
+        file_menu.add_command(
             label=app.strings.exit, command=app.exit
         )
 

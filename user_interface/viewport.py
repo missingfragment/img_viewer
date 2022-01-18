@@ -28,12 +28,15 @@ class ViewPort(Canvas):
         x, y = (self.winfo_pointerx(),
                 self.winfo_pointery())
 
+        first, last = self.scrollbar.get()
+        if first <= 0 and last >= 1:
+            return "break"
+
         if sys.platform.startswith("win32"):
             scroll_amount = round((-event.delta / 120) * 2)
         elif sys.platform.startswith("darwin"):
             scroll_amount = -event.delta
 
-        print(f"x: {x}; y: {y}")
         if self.winfo_containing(x, y) != self.scrollbar:
             self.yview_scroll(scroll_amount, "units")
 

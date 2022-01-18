@@ -5,6 +5,7 @@ from pathlib import Path
 from configparser import ConfigParser
 from user_interface.folder_view_window import FolderViewWindow
 from user_interface.image_view_window import ImageViewWindow
+from user_interface.settings_window import SettingsWindow
 
 
 class Application():
@@ -111,6 +112,13 @@ class Application():
         self.windows["welcome"].withdraw()
 
         win = self.windows["folder"]
+        win.lift()
+        win.focus_force()
+
+    def open_settings(self):
+        self.windows["settings"] = SettingsWindow(self.root, app=self)
+
+        win = self.windows["settings"]
         win.lift()
         win.focus_force()
 
