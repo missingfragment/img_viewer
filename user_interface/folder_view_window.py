@@ -24,10 +24,10 @@ class FolderViewWindow(DefaultWindow):
 
         self.config: ConfigParser = self.app.config
 
-        self.update_config()
-
         self.page = 0
         self.max_pages = 0
+
+        self.update_config()
 
         self.thumb_size = (200, 200)
 
@@ -158,6 +158,8 @@ class FolderViewWindow(DefaultWindow):
             self.viewport.grid()
             self.loading_panel.grid_remove()
 
+            self.viewport.yview_moveto(0)
+
             self.back_button.configure(
                 state="disabled" if self.page <= 0 else "normal"
             )
@@ -184,6 +186,11 @@ class FolderViewWindow(DefaultWindow):
     def update_config(self):
         self.batch_count = self.config.getint(
             "FolderView", "folder batch count")
+
+        self.max_pages = len(self.files) // self.batch_count
+
+        if self.page > self.max_pages:
+            self.page = self.max_pages
 
     def update_images(self, files: list[Path]):
         self.images: Image = []
