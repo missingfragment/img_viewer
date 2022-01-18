@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-from PIL import Image, ImageTk
 import sys
 
 
@@ -19,12 +18,26 @@ class ViewPort(Canvas):
             0, 0, window=self.mainframe, anchor=NW, tags="main"
         )
 
+        self.scroll_active = True
+
         self.mainframe.bind("<Configure>", self.on_frame_configure)
-        self.bind_all("<MouseWheel>", self.on_mousewheel)
+        self.mainframe.bind("<Enter>", self.on_enter)
+        self.mainframe.bind("<Leave>", self.on_leave)
 
         self.items = []
 
+    def on_enter(self, event):
+        self.scroll_active = True
+
+    def on_leave(self, event):
+        self.scroll_active = False
+
     def on_mousewheel(self, event):
+        if not self.scroll_active:
+            return
+        if not self.parent.focus_displayof():
+            return
+
         x, y = (self.winfo_pointerx(),
                 self.winfo_pointery())
 

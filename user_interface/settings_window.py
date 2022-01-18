@@ -1,5 +1,7 @@
+from email import message
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from configparser import ConfigParser
 from typing import Dict
 from user_interface.default_window import DefaultWindow
@@ -71,23 +73,45 @@ class SettingsWindow(DefaultWindow):
                     ).grid(column=1, row=rows)
                 else:
                     v = StringVar()
+                    v.set(self.config.get(section, option))
                     self.config_vars[option] = v
                     self.controls[f"{section}-{option}"] = ttk.Entry(
-                        mainframe
+                        mainframe, textvariable=v
                     ).grid(column=1, row=rows)
 
             rows += 1
 
         apply_button = ttk.Button(
             self.button_frame,
-            text=strings.apply
+            text=strings.apply,
+            command=self.apply
         ).grid(column=0, row=0)
         cancel_button = ttk.Button(
             self.button_frame,
-            text=strings.cancel
+            text=strings.cancel,
+            command=self.cancel
         ).grid(column=1, row=0)
 
         self.buttons["apply"] = apply_button
         self.buttons["cancel"] = cancel_button
 
         return mainframe
+
+    def apply(self):
+        for section in self.config.sections():
+            for option in self.config.options(section):
+                self.config.set(section, option, str(
+                    self.config_vars[option].get()))
+
+        self.app.save_config()
+
+        messagebox.showinfo("Settings", "Settings updated.")
+
+    def cancel(self):
+        confirm = messagebox.askokcancel(
+            "Settings",
+            "Unsaved changes will be lost.  Exit settings?"
+        )
+
+        if confirm:
+            self.destroy()

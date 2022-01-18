@@ -22,8 +22,9 @@ class FolderViewWindow(DefaultWindow):
         self.path = path
         self.files = []
 
-        config: ConfigParser = self.app.config
-        self.batch_count = config.getint("FolderView", "folder batch count")
+        self.config: ConfigParser = self.app.config
+
+        self.update_config()
 
         self.page = 0
         self.max_pages = 0
@@ -179,6 +180,10 @@ class FolderViewWindow(DefaultWindow):
         endpoint = min(offset + page_size, len(self.files))
 
         return files[offset:endpoint]
+
+    def update_config(self):
+        self.batch_count = self.config.getint(
+            "FolderView", "folder batch count")
 
     def update_images(self, files: list[Path]):
         self.images: Image = []

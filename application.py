@@ -1,4 +1,4 @@
-from tkinter import ttk, filedialog, messagebox
+from tkinter import Toplevel, ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 from strings import Strings
 from pathlib import Path
@@ -6,12 +6,15 @@ from configparser import ConfigParser
 from user_interface.folder_view_window import FolderViewWindow
 from user_interface.image_view_window import ImageViewWindow
 from user_interface.settings_window import SettingsWindow
+from user_interface.viewport import ViewPort
 
 
 class Application():
     def __init__(self, root) -> None:
         self.strings = Strings()
         self.root = root
+
+        self.config_path = Path("config.ini")
 
         self.filetypes = [
             ("Common Formats", ".png .jpg .jpeg .gif .bmp .webp"),
@@ -45,13 +48,25 @@ class Application():
 
         self.init_config()
 
+        self.root.bind_all("<MouseWheel>", self.on_mousewheel)
+
+    def on_mousewheel(self, event):
+        for key in self.windows:
+            viewport: ViewPort
+            try:
+                viewport = self.windows[key].viewport
+            except AttributeError:
+                continue
+
+            viewport.on_mousewheel(event)
+
     def has_valid_extention(self, filename: str):
         return any(filename.lower().endswith(e) for e in self.file_extentions)
 
     def init_config(self):
         self.config = ConfigParser()
 
-        config_path = Path("config.ini")
+        config_path = self.config_path
 
         self.config["FolderView"] = {}
         self.config["FolderView"]["folder batch count"] = "21"
@@ -59,9 +74,21 @@ class Application():
         if config_path.is_file() and config_path.exists():
             self.config.read(config_path)
         else:
+            self.save_config()
+
+    def save_config(self):
+
+        if "folder" in self.windows.keys():
+            win: FolderViewWindow = self.windows["folder"]
+            win.update_config()
+            win.reload_page()
+
+        config_path = self.config_path
+        if not (config_path.is_file() or config_path.exists()):
             config_path.touch()
-            with open(config_path, 'w') as config_file:
-                self.config.write(config_file)
+
+        with open(config_path, 'w') as config_file:
+            self.config.write(config_file)
 
     def open_image(self, file=None):
         if file is None:
