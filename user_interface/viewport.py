@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
+import sys
 
 
 class ViewPort(Canvas):
@@ -11,13 +12,30 @@ class ViewPort(Canvas):
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.rowconfigure(0, weight=1)
 
+        self.parent = parent
+        self.scrollbar = None
+
         self.create_window(
             0, 0, window=self.mainframe, anchor=NW, tags="main"
         )
 
         self.mainframe.bind("<Configure>", self.on_frame_configure)
+        self.bind_all("<MouseWheel>", self.on_mousewheel)
 
         self.items = []
+
+    def on_mousewheel(self, event):
+        x, y = (self.winfo_pointerx(),
+                self.winfo_pointery())
+
+        if sys.platform.startswith("win32"):
+            scroll_amount = round((-event.delta / 120) * 2)
+        elif sys.platform.startswith("darwin"):
+            scroll_amount = -event.delta
+
+        print(f"x: {x}; y: {y}")
+        if self.winfo_containing(x, y) != self.scrollbar:
+            self.yview_scroll(scroll_amount, "units")
 
     def on_frame_configure(self, event):
         self.configure(scrollregion=self.bbox("all"))

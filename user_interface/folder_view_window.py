@@ -36,6 +36,8 @@ class FolderViewWindow(DefaultWindow):
 
         self.scrollbar.grid(column=1, row=0, sticky=NSEW)
 
+        self.viewport.scrollbar = self.scrollbar
+
         self.navigation_panel = self.setup_navigation_panel()
         self.navigation_panel.grid(column=0, row=1, sticky=NSEW)
 
