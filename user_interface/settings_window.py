@@ -1,11 +1,12 @@
-from email import message
 from tkinter import *
+from tkinter import font as tkFont
 from tkinter import ttk
 from tkinter import messagebox
 from configparser import ConfigParser
 from typing import Dict
 from user_interface.default_window import DefaultWindow
 from user_interface.viewport import ViewPort
+from user_interface.menubars.settings_menubar import SettingsMenubar
 
 
 class SettingsWindow(DefaultWindow):
@@ -21,9 +22,23 @@ class SettingsWindow(DefaultWindow):
 
         self.config_vars = {}
 
+        self.header_font = tkFont.Font(
+            family="Segoe UI",
+            size=12,
+            weight="bold"
+        )
+        self.option_font = tkFont.Font(
+            family="Courier New",
+            size=10
+        )
+
+        style = ttk.Style()
+        style.configure("Header.TLabel", font=self.header_font)
+        style.configure("Option.Tlabel", font=self.option_font)
+
         self.viewport = ViewPort(self, borderwidth=0, bd=0)
 
-        self.button_frame = ttk.Frame(self, padding=15)
+        self.button_frame = ttk.Frame(self, padding=5)
 
         self.mainframe = self.setup_layout()
 
@@ -37,8 +52,14 @@ class SettingsWindow(DefaultWindow):
         self.viewport.scrollbar = self.scrollbar
 
         self.viewport.grid(column=0, row=0, sticky=NSEW)
-        self.button_frame.grid(column=0, row=1, sticky=NSEW)
+        self.button_frame.grid(column=0, row=1, sticky=E)
         self.scrollbar.grid(column=1, row=0, sticky=NSEW)
+
+        self.bindings = {}
+        self.bindings["destroy"] = self.bind("<Destroy>", self.on_destroy)
+
+        self.menubar = SettingsMenubar(self)
+        self['menu'] = self.menubar
 
     def setup_layout(self) -> Widget:
         strings = self.app.strings
@@ -52,11 +73,19 @@ class SettingsWindow(DefaultWindow):
 
         section: dict
         for section in self.config.sections():
-            self.labels[section] = ttk.Label(mainframe, text=section)
+            self.labels[section] = ttk.Label(
+                mainframe,
+                text=section,
+                style="Header.TLabel"
+            )
+            self.labels[section].grid(column=0, row=rows, stick=W)
+            rows += 1
             for option in self.config.options(section):
                 self.labels[f"{section}-{option}"] = ttk.Label(
-                    mainframe, text=option
-                ).grid(column=0, row=rows)
+                    mainframe,
+                    text=option,
+                    style="Option.TLabel"
+                ).grid(column=0, row=rows, ipadx=5)
 
                 bool_value: bool = None
 
@@ -107,11 +136,27 @@ class SettingsWindow(DefaultWindow):
 
         messagebox.showinfo("Settings", "Settings updated.")
 
-    def cancel(self):
-        confirm = messagebox.askokcancel(
-            "Settings",
-            "Unsaved changes will be lost.  Exit settings?"
-        )
+    def save_close(self):
+        self.apply()
+        self.cancel(ask=False)
+
+    def cancel(self, ask=True):
+        if ask:
+            confirm = messagebox.askokcancel(
+                "Settings",
+                "Unsaved changes will be lost.  Exit settings?"
+            )
+        else:
+            confirm = True
 
         if confirm:
             self.destroy()
+
+    def on_destroy(self, *args):
+        try:
+            del self.bindings
+        except AttributeError:
+            pass
+
+        self.destroy()
+        return "break"

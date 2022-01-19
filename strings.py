@@ -17,6 +17,9 @@ class Strings:
         self.apply = "Apply"
         self.cancel = "Cancel"
 
+        self.save_close = "Save changes and close window"
+        self.discard_close = "Discard changes and close window"
+
         self.view = "View"
         self.fullscreen = "Fullscreen"
         self.exit_fullscreen = "Exit Fullscreen"
